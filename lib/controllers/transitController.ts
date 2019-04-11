@@ -1,33 +1,45 @@
-import { Request, Response } from 'express';
-import { TransitModel } from '../models/transit';
-import { RouteDistanceService } from '../services/routeDistanceService';
-import express = require('express');
-import { Transit } from 'interfaces/transit';
-import IController from 'interfaces/controller';
+import "reflect-metadata";
+import { DistanceService } from "interfaces/distanceService";
+import { Request, Response } from "express";
+import { TransitModel } from "../models/transit";
+import { Transit } from "interfaces/transit";
+import { inject } from "inversify";
+import { TYPES } from "../di/types";
+import {
+  controller,
+  httpPost,
+  BaseHttpController,
+  requestBody,
+  HttpResponseMessage,
+  JsonContent
+} from "inversify-express-utils";
 
-export class TransitController implements IController {
-    private path = '/transits';
-    public router = express.Router();
-    private routeDistanceService: RouteDistanceService;
+@controller("/transits")
+export class TransitController extends BaseHttpController {
+  @inject(TYPES.DistanceService)
+  private routeDistanceService!: DistanceService;
 
-    constructor() {
-        this.initializeRoutes();
-        this.routeDistanceService = new RouteDistanceService();
-    }
+  @httpPost("/")
+  public async addTransit(@requestBody() dto: Transit, res: Response) {
+    const transitDate = new Date(dto.date);
 
-    private initializeRoutes() {
-        this.router.post(this.path, this.addTransit);
-    }
-
-    public addTransit = async (req: Request, res: Response) => {
-        const transitData: Transit = req.body;
-        const transitDate = new Date(transitData.date);
-
-        transitData.distance = await this.routeDistanceService.getDistance(transitData.sourceAddress, transitData.destinationAddress);
-        transitData.date = new Date(transitDate.getFullYear(),transitDate.getMonth(),transitDate.getDate())
-        const newTransit = new TransitModel(transitData);
-        newTransit.save().then(
-            result => res.json(result),
-        ).catch(err => res.send(err));
-    }
+    dto.distance = await this.routeDistanceService.count(
+      dto.sourceAddress,
+      dto.destinationAddress
+    );
+    dto.date = new Date(
+      transitDate.getFullYear(),
+      transitDate.getMonth(),
+      transitDate.getDate()
+    );
+    const newTransit = new TransitModel(dto);
+    return newTransit
+      .save()
+      .then(result => {
+        let response = new HttpResponseMessage(200);
+        response.content = new JsonContent(result);
+        return response;
+      })
+      .catch(err => res.send(err));
+  }
 }

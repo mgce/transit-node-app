@@ -1,15 +1,11 @@
 import {App} from './app';
-import { TransitController } from './controllers/transitController';
-import { ReportsController } from './controllers/reportsController';
 import 'dotenv/config';
+import { Container } from './di/container';
+import './controllers/reportsController'
+import './controllers/transitController'
 
 const PORT = 3000;
 
-const controllers = [
-    new TransitController,
-    new ReportsController,
-]
-
-const app = new App(controllers, PORT);
+const app = new App(Container, PORT);
 
 app.listen();
