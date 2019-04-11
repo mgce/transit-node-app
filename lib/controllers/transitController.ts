@@ -1,3 +1,4 @@
+import { DateHelper } from './../utils/dateHelper';
 import "reflect-metadata";
 import { DistanceService } from "interfaces/distanceService";
 import { Request, Response } from "express";
@@ -27,11 +28,9 @@ export class TransitController extends BaseHttpController {
       dto.sourceAddress,
       dto.destinationAddress
     );
-    dto.date = new Date(
-      transitDate.getFullYear(),
-      transitDate.getMonth(),
-      transitDate.getDate()
-    );
+
+    dto.date = DateHelper.dateWithoutTime(transitDate);
+
     const newTransit = new TransitModel(dto);
     return newTransit
       .save()
