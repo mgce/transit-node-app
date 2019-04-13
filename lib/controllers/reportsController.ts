@@ -1,49 +1,32 @@
-import { Transit } from "interfaces/transit";
 import "reflect-metadata";
 import { Request, Response } from "express";
 import { TransitModel } from "../models/transit";
-import { MonthlyReportItem } from "./../interfaces/monthlyReportItem";
 import {
   controller,
   httpGet,
   BaseHttpController
 } from "inversify-express-utils";
 import { DateHelper } from "../utils/dateHelper";
-import { start } from "repl";
+import { inject } from "inversify";
+import { TYPES } from "di/types";
+import { DataPreparator } from "interfaces/reportsDataPreparator";
 
 @controller("/reports")
 export class ReportsController extends BaseHttpController {
+  private readonly dataPreparator : DataPreparator;
+
+  constructor(@inject(TYPES.ReportsDataPreparator) dataPreparator : DataPreparator) {
+    super();
+    this.dataPreparator = dataPreparator;
+  }
+
   @httpGet("/monthly")
   public async getMonthly(req: Request, res: Response) {
     const { date } = req.query;
 
     const parsedDate = new Date(date);
 
-    const startOfMonth = DateHelper.startOfMonth(parsedDate);
-    const endOfMonth = DateHelper.endOfMonth(parsedDate);
-
-    return TransitModel.aggregate([
-      { $match: { date: { $gte: startOfMonth, $lt: endOfMonth } } },
-      {
-        $group: {
-          _id: "$date",
-          date: {
-            $max: "$date"
-          },
-          averagePrice: {
-            $avg: "$price"
-          },
-          averageDistance: {
-            $avg: "$distance"
-          },
-          totalDistance: {
-            $sum: "$distance"
-          }
-        }
-      }
-    ])
-      .then((response: MonthlyReportItem[]) => res.json(response))
-      .catch(err => res.send(err));
+    return await this.dataPreparator.getMonthly(parsedDate);
   }
 
   @httpGet("/range")

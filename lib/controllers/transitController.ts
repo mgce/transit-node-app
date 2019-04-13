@@ -1,7 +1,7 @@
 import { DateHelper } from './../utils/dateHelper';
 import "reflect-metadata";
 import { DistanceService } from "interfaces/distanceService";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { TransitModel } from "../models/transit";
 import { Transit } from "interfaces/transit";
 import { inject } from "inversify";

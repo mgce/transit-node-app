@@ -1,3 +1,4 @@
 export const TYPES = {
-    DistanceService: Symbol.for("DistanceService")
+    DistanceService: Symbol.for("DistanceService"),
+    ReportsDataPreparator: Symbol.for("DataPreparator"),
 }
