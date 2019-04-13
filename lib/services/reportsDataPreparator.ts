@@ -1,7 +1,7 @@
-import { DateHelper } from "utils/dateHelper";
-import { TransitModel } from "models/transit";
-import { MonthlyReportItem } from "interfaces/monthlyReportItem";
-import { DataPreparator } from "interfaces/reportsDataPreparator";
+import { DateHelper } from "../utils/dateHelper";
+import { TransitModel } from "../models/transit";
+import { MonthlyReportItem } from "../interfaces/monthlyReportItem";
+import { DataPreparator } from "../interfaces/dataPreparator";
 
 export class ReportsDataPreparator implements DataPreparator {
     public async getMonthly(date: Date) : Promise<MonthlyReportItem[]>{

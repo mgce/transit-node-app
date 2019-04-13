@@ -9,7 +9,7 @@ import {
 import { DateHelper } from "../utils/dateHelper";
 import { inject } from "inversify";
 import { TYPES } from "di/types";
-import { DataPreparator } from "interfaces/reportsDataPreparator";
+import { DataPreparator } from "interfaces/dataPreparator";
 
 @controller("/reports")
 export class ReportsController extends BaseHttpController {
