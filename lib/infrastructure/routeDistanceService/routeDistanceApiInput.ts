@@ -1,4 +1,4 @@
-export class RouteDistanceInput {
+export class RouteDistanceApiInput {
   private waypoints: any[];
   private distanceUnit: string;
 

@@ -1,11 +1,11 @@
-import { DateHelper } from './../utils/dateHelper';
 import "reflect-metadata";
+import { DateHelper } from './../utils/dateHelper';
 import { DistanceService } from "interfaces/distanceService";
 import { Response } from "express";
-import { TransitModel } from "../models/transit";
 import { Transit } from "interfaces/transit";
 import { inject } from "inversify";
 import { TYPES } from "../di/types";
+import { ITransitRepository } from 'dal/transitRepository';
 import {
   controller,
   httpPost,
@@ -20,6 +20,9 @@ export class TransitController extends BaseHttpController {
   @inject(TYPES.DistanceService)
   private routeDistanceService!: DistanceService;
 
+  @inject(TYPES.TransitRepository)
+  private transitRepository!: ITransitRepository;
+
   @httpPost("/")
   public async addTransit(@requestBody() dto: Transit, res: Response) {
     const transitDate = new Date(dto.date);
@@ -28,12 +31,11 @@ export class TransitController extends BaseHttpController {
       dto.sourceAddress,
       dto.destinationAddress
     );
-
+``
     dto.date = DateHelper.dateWithoutTime(transitDate);
 
-    const newTransit = new TransitModel(dto);
-    return newTransit
-      .save()
+    // const newTransit = new TransitModel(dto);
+    return this.transitRepository.create(dto)
       .then(result => {
         let response = new HttpResponseMessage(200);
         response.content = new JsonContent(result);

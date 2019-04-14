@@ -27,4 +27,4 @@ const TransitSchema: Schema = new Schema({
     }
 })
 
-export const TransitModel: Model<ITransitModel> = model<ITransitModel>('Transit', TransitSchema);
+export default model<ITransitModel>('Transit', TransitSchema);

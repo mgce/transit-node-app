@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Request, Response } from "express";
-import { TransitModel } from "../models/transit";
+import TransitModel from "../dal/models/transit";
 import {
   controller,
   httpGet,
@@ -8,8 +8,8 @@ import {
 } from "inversify-express-utils";
 import { DateHelper } from "../utils/dateHelper";
 import { inject } from "inversify";
-import { TYPES } from "di/types";
-import { DataPreparator } from "interfaces/dataPreparator";
+import { TYPES } from "../di/types";
+import { DataPreparator } from "../interfaces/dataPreparator";
 
 @controller("/reports")
 export class ReportsController extends BaseHttpController {
