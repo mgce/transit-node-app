@@ -19,6 +19,6 @@ export class ReportsDataPreparator implements DataPreparator {
         const startOfMonth = DateHelper.startOfMonth(date);
         const endOfMonth = DateHelper.endOfMonth(date);
 
-        return this.transitRepository.getFromRange(startOfMonth, endOfMonth);
+        return this.transitRepository.getToMonthlyReport(startOfMonth, endOfMonth);
     }
 }

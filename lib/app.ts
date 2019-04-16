@@ -36,12 +36,6 @@ export class App {
         app.use(bodyParser.urlencoded({extended: false}))
     }
 
-    // private initializeControllers(controllers : Controller[]){
-    //     controllers.forEach(controller => {
-    //         this.app.use('/', controller.router)
-    //     });
-    // }
-
     private mongoSetup(): void{
         mongoose.Promise = global.Promise;
         mongoose.connect(this.mongoUrl);    

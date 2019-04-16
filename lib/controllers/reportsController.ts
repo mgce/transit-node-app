@@ -10,14 +10,15 @@ import { DateHelper } from "../utils/dateHelper";
 import { inject } from "inversify";
 import { TYPES } from "../di/types";
 import { DataPreparator } from "../interfaces/dataPreparator";
+import { ITransitRepository } from "dal/transitRepository";
 
 @controller("/reports")
 export class ReportsController extends BaseHttpController {
-  private readonly dataPreparator : DataPreparator;
+  private readonly transitRepository: ITransitRepository;
 
-  constructor(@inject(TYPES.ReportsDataPreparator) dataPreparator : DataPreparator) {
+  constructor(@inject(TYPES.TransitRepository) transitRepository: ITransitRepository) {
     super();
-    this.dataPreparator = dataPreparator;
+    this.transitRepository = transitRepository;
   }
 
   @httpGet("/monthly")
@@ -26,7 +27,10 @@ export class ReportsController extends BaseHttpController {
 
     const parsedDate = new Date(date);
 
-    return await this.dataPreparator.getMonthly(parsedDate);
+    const startOfMonth = DateHelper.startOfMonth(parsedDate);
+    const endOfMonth = DateHelper.endOfMonth(parsedDate);
+
+    return await this.transitRepository.getToMonthlyReport(startOfMonth, endOfMonth);
   }
 
   @httpGet("/range")
@@ -36,28 +40,6 @@ export class ReportsController extends BaseHttpController {
     const startDate = DateHelper.dateWithoutTime(range.startDate);
     const endDate = DateHelper.dateWithoutTime(range.endDate);
 
-    TransitModel.aggregate([
-      { $match: { date: { $gte: startDate, $lt: endDate } } },
-      {
-        $group: {
-          _id: "$date",
-          totalDistance: {
-            $sum: "$distance"
-          },
-          totalPrice: {
-            $sum: "$price"
-          }
-        }
-      }
-    ]);
-
-    return TransitModel.find({
-      date: {
-        $lt: startDate,
-        $gte: endDate
-      }
-    })
-      .then(response => res.json(response))
-      .catch(err => res.send(err));
+    return this.transitRepository.getToDailyRaport(startDate, endDate);
   }
 }
