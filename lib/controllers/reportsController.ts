@@ -1,6 +1,5 @@
 import "reflect-metadata";
 import { Request, Response } from "express";
-import TransitModel from "../dal/models/transit";
 import {
   controller,
   httpGet,
@@ -9,7 +8,6 @@ import {
 import { DateHelper } from "../utils/dateHelper";
 import { inject } from "inversify";
 import { TYPES } from "../di/types";
-import { DataPreparator } from "../interfaces/dataPreparator";
 import { ITransitRepository } from "dal/transitRepository";
 
 @controller("/reports")
@@ -30,7 +28,9 @@ export class ReportsController extends BaseHttpController {
     const startOfMonth = DateHelper.startOfMonth(parsedDate);
     const endOfMonth = DateHelper.endOfMonth(parsedDate);
 
-    return await this.transitRepository.getToMonthlyReport(startOfMonth, endOfMonth);
+    return this.transitRepository.getToMonthlyReport(startOfMonth, endOfMonth)
+    .then(response => res.json(response))
+    .catch(err => res.send(err));
   }
 
   @httpGet("/range")
@@ -40,6 +40,8 @@ export class ReportsController extends BaseHttpController {
     const startDate = DateHelper.dateWithoutTime(range.startDate);
     const endDate = DateHelper.dateWithoutTime(range.endDate);
 
-    return this.transitRepository.getToDailyRaport(startDate, endDate);
+    return this.transitRepository.getToDailyRaport(startDate, endDate)
+    .then(response => res.json(response))
+    .catch(err => res.send(err));
   }
 }
